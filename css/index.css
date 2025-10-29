@@ -1,0 +1,919 @@
+/* --- General Styles --- */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+:root {
+    --bar-color: #1EB360;
+}
+
+html {
+    height: 100%;
+}
+
+main { 
+    flex: 1; /* ← 이 한 줄을 추가해주세요! */
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Pretendard', sans-serif; color: #333; background-color: #fff; line-height: 1.6; height: 100%; }
+ul, li { list-style: none; }
+a { text-decoration: none; color: inherit; }
+#wrapper { width: 100%; overflow-x: hidden; 
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;}
+section { padding: 80px 20px; text-align: center; }
+section h2 { font-size: 28px; font-weight: 700; margin-bottom: 40px; }
+
+/* --- Header (농심 스타일 적용) --- */
+header {
+    width: 100%; position: fixed; top: 0; left: 0; z-index: 1000;
+    background-color: transparent;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+header.is-active {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* 30번째 줄 근처 */
+header.is-active {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* ▼▼▼ 서브페이지 헤더 스타일 추가 ▼▼▼ */
+header.active-subpage,
+header.active-subpage.is-active { /* 스크롤 시에도 유지되도록 .is-active 포함 */
+    background-color: #fff; /* 항상 흰색 배경 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+header.active-subpage .header-top {
+    background-color: #f8f8f8; /* 상단 메뉴는 항상 회색 배경 */
+}
+
+header.active-subpage .top-menu li a {
+    color: #666; /* 상단 메뉴 텍스트는 항상 회색 */
+}
+/* 상단 메뉴 활성 텍스트 색상은 기존 규칙(.top-menu li.active a) 유지 */
+
+header.active-subpage .gnb .main-menu > li > a,
+header.active-subpage .util-menu {
+    color: #333; /* 메인 메뉴/아이콘은 항상 검은색 */
+}
+/* 메인 메뉴 활성 텍스트 색상은 기존 규칙(.gnb .main-menu > li.active-main-item > a) 유지 */
+/* ▲▲▲ 여기까지 추가 ▲▲▲ */
+
+/* 1. 상단 메뉴 (움직이는 바) */
+.header-top {
+    background-color:#fff;
+    transition: background-color 0.4s ease;
+    position: relative; /* z-index를 적용하기 위해 추가 */
+    z-index: 10;      /* 서브메뉴보다 위에 있도록 설정 */
+}
+
+header.is-active .header-top {
+    background-color: #f8f8f8;
+}
+.top-menu-container {
+    max-width: 1200px; margin: 0 auto; padding: 0 20px;
+    display: flex;
+    justify-content: center; /* 중앙 정렬 */
+    position: relative; 
+}
+.top-menu {
+    display: inline-flex;
+}
+.top-menu li a {
+    display: block;
+    padding: 8px 15px;
+    font-size: 13px;
+    color: black;
+    transition: color 0.4s ease;
+}
+header.is-active .top-menu li a {
+    color: #666;
+}
+.top-menu li.active a { /* JS에서 제어 */
+    color: var(--bar-color);
+}
+.active-bar {
+    position: absolute;
+    bottom: 0;
+    height: 3px;
+    background-color: var(--bar-color);
+    transition: left 0.4s ease, width 0.4s ease;
+}
+
+/* 2. 메인 네비게이션 영역 */
+.header-container {
+    max-width: 1200px; margin: 0 auto; padding: 0 20px;
+    height: 80px; display: flex; justify-content: space-between; align-items: center;
+    z-index: 10;
+}
+.logo a { display: block; margin-top: 12px;}
+.gnb { position: absolute; left: 50%; transform: translateX(-50%); }
+.gnb .main-menu { display: flex; gap: 50px; }
+.gnb .main-menu > li > a {
+    font-size: 18px; font-weight: 700; padding: 28px 0;
+    color: #fff;
+    transition: color 0.4s ease;
+}
+.util-menu {
+    display: flex; gap: 20px; font-size: 24px;
+    color: #fff;
+    transition: color 0.4s ease;
+}
+
+/* 활성화 상태일 때의 색상 변경 */
+header.is-active .gnb .main-menu > li > a,
+header.is-active .util-menu {
+    color: #333;
+}
+header.is-active .logo {
+    /* 로고는 색상 변경 없음 */
+}
+
+/* Submenu */
+.submenu-wrap {
+    top: 117px; 
+    position: absolute; left: 0; width: 100%;
+    background-color: #fff;
+    
+    /* 1. 평소에는 높이를 0으로 만들고 내용을 숨김 */
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    
+    /* 2. max-height와 opacity에 부드러운 전환 효과 적용 */
+    transition: max-height 0.4s ease-in-out, opacity 0.3s ease;
+}
+
+.submenu-wrap.is-active {
+    /* 3. 활성화 시 최대 높이를 충분히 주어 아래로 펼쳐지게 함 */
+    max-height: 400px; /* 서브메뉴의 실제 높이보다 큰 값 */
+    opacity: 1;
+}
+
+.submenu-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    /* 기존 flex 속성 제거 */
+}
+
+/* 새로 추가된 submenu-row 스타일 */
+.submenu-row {
+    display: flex;
+    width: 100%;
+}
+
+/* 첫 번째 줄: 양쪽 끝으로 정렬 */
+.submenu-row:first-child {
+    justify-content: space-between;
+    margin-bottom: 30px; /* 줄 사이 간격 */
+}
+
+/* 두 번째 줄: 좌측으로 정렬 */
+.submenu-row:last-child {
+    justify-content: flex-start; /* 좌측 정렬로 변경 */
+    gap: 150px; 
+}
+
+.submenu-list {
+    /* 기존 flex: 1 속성 제거 */
+    width: 180px; /* 각 메뉴 리스트의 너비 고정 */
+}
+.submenu-list h3 { font-size: 16px; font-weight: 700; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #ddd; color: #333; }
+.submenu-list ul li a { font-size: 14px; padding: 5px 0; display: block; color: #666; transition: color 0.3s; }
+.submenu-list ul li a:hover { color: #000; }
+
+
+/* --- Main & Sections (이전과 동일) --- */
+/* ▼▼▼ 이 코드로 전체를 바꿔주세요 ▼▼▼ */
+main { }
+.hero { 
+    padding: 0; 
+    position: relative; 
+}
+.hero-swiper { width: 100%; height: 855px; }
+.hero .swiper-slide { background-size: cover; background-position: center; color: #fff; display: flex; align-items: center; justify-content: center; }
+.slide-text { 
+    max-width: 1200px; 
+    width: 100%; 
+    padding: 0 40px; 
+    text-align: right; 
+}
+.slide-text h2 { 
+    font-size: 48px; 
+    font-weight: 300; 
+    color: #fff; 
+    line-height: 1.4; 
+}
+.swiper-custom-controls {
+    position: absolute; bottom: 80px; left: 50%;
+    transform: translateX(-50%); z-index: 10;
+    display: flex; align-items: center; gap: 15px;
+}
+.swiper-pagination {
+    position: static; width: auto;
+}
+.swiper-pagination-bullet {
+    width: 8px; height: 8px;
+    background-color: #fff; opacity: 0.7;
+    transition: all 0.3s ease;
+}
+.swiper-pagination-bullet-active {
+    width: 24px; border-radius: 5px; opacity: 1;
+}
+
+/* ▼▼▼ 이 코드를 추가해주세요! ▼▼▼ */
+.swiper-button-prev,
+.swiper-button-next {
+    color: #fff; /* 화살표 색상은 흰색 */
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.2); /* 살짝 투명한 배경 */
+    border-radius: 50%; /* 동그랗게 만들기 */
+    transition: background-color 0.3s ease;
+}
+
+/* 마우스를 올리면 배경을 더 진하게 */
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Swiper가 기본으로 제공하는 화살표 아이콘 크기 조절 */
+.swiper-button-prev::after,
+.swiper-button-next::after {
+    font-size: 20px; /* 아이콘 크기 */
+    font-weight: 700; /* 아이콘 굵기 */
+}
+
+.scroll-down-btn {
+    position: absolute;
+    bottom: -20px; /* 아래에서 30px 위로 위치 변경 */
+    left: 50%;
+    transform: translateX(-50%); /* 가로 중앙 정렬만 유지 */
+    z-index: 10;
+}
+.scroll-down-btn a {
+    display: flex; justify-content: center; align-items: center;
+    width: 40px; height: 40px;
+    background-color: var(--bar-color); color: #fff;
+    border-radius: 5px; font-size: 24px;
+}
+/* ▲▲▲ 여기까지 전부 교체 ▲▲▲ */
+
+/* Ranking Section */
+.ranking {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 100px;
+    padding-top: 200px;
+}
+.ranking-nav-container {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    cursor: grab;
+}
+.ranking-nav-container::-webkit-scrollbar {
+    display: none;
+}
+.ranking-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    gap: 30px;
+    border-bottom: 1px solid #eee;
+    pointer-events: none;
+}
+.ranking-nav li a {
+    display: block;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #888;
+    pointer-events: all;
+}
+.ranking-nav li.active a {
+    color: #333;
+    font-weight: 700;
+}
+.ranking-active-bar {
+    position: absolute;
+    bottom: 15px;
+    height: 3px;
+    background-color: var(--bar-color);
+    transition: left 0.4s ease, width 0.4s ease;
+}
+
+/* Ranking Section */
+.ranking {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 100px;
+}
+.ranking-nav-container {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    cursor: grab;
+}
+.ranking-nav-container::-webkit-scrollbar {
+    display: none;
+}
+.ranking-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    gap: 30px;
+    border-bottom: 1px solid #eee;
+    pointer-events: none;
+}
+.ranking-nav li a {
+    display: block;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #888;
+    pointer-events: all;
+    transition: color 0.3s ease; /* ▼ 색상 변경을 부드럽게 만들기 위해 추가 ▼ */
+}
+
+/* ▼▼▼ 마우스를 올렸을 때 글자색을 검은색으로 바꾸는 규칙 추가 ▼▼▼ */
+.ranking-nav li a:hover {
+    color: #333;
+}
+.ranking-nav li.active a {
+    color: #333;
+    font-weight: 700;
+}
+.ranking-active-bar {
+    position: absolute;
+    bottom: 15px;
+    height: 3px;
+    background-color: var(--bar-color);
+    transition: left 0.4s ease, width 0.4s ease;
+}
+
+/* ▼▼▼ 여기가 핵심! 모든 규칙 앞에 .ranking을 추가하여 범위를 한정합니다 ▼▼▼ */
+.ranking .item-list { 
+    display: flex; 
+    justify-content: center;
+    gap: 20px; 
+    flex-wrap: wrap; 
+}
+.ranking .item {
+    width: 200px; /* 고정 너비로 설정 */
+    text-align: left;
+    position: relative;
+}
+.ranking .rank-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 28px;
+    height: 28px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 700;
+}
+.ranking .item img {
+    width: 100%;
+    margin-bottom: 10px;
+    display: block; 
+    transition: box-shadow 0.3s ease-in-out; /* ▼ box-shadow 애니메이션으로 변경 ▼ */
+}
+
+.ranking .item img:hover {
+    /* transform: scale(1.05); */ /* 확대 효과 삭제 또는 주석 처리 */
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15); /* ▼ 그림자 효과 추가 ▼ */
+}
+
+.ranking .item h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+.ranking .price-box {
+    margin-top: 8px;
+}
+.ranking .original-price {
+    font-size: 14px;
+    color: #aaa;
+    text-decoration: line-through;
+}
+.ranking .final-price-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+.ranking .discount {
+    font-size: 18px;
+    font-weight: 700;
+    color: #e52e2e;
+}
+.ranking .final-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+.ranking .tags {
+    margin-top: 10px;
+}
+.ranking .tags span {
+    font-size: 13px;
+    color: #999;
+    margin-right: 6px;
+}
+
+.bestseller { background-color: #f7f3f0; margin-top: 200px;
+    margin-bottom: 150px; }
+.bestseller-content { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 50px; }
+.text-area { text-align: left; }
+.text-area span { font-size: 14px; font-weight: 700; color: #666; }
+.text-area h2 { text-align: left; font-size: 32px; margin: 10px 0; }
+.text-area p { font-size: 16px; color: #555; margin-bottom: 30px; }
+.btn-more { display: inline-block; padding: 10px 25px; border: 1px solid #333; font-size: 14px; font-weight: 600; transition: background-color 0.3s, color 0.3s; }
+.btn-more:hover { background-color: #333; color: #fff; }
+.bestseller .img-area img { 
+    max-width: 300px;
+    transition: transform 0.3s ease-in-out; /* 부드러운 애니메이션 효과 */
+}
+
+.bestseller .img-area img:hover {
+    transform: scale(1.05); /* 마우스를 올리면 1.05배 확대 */
+}
+/* Benefits Section */
+.benefits { 
+    max-width: 100%; 
+    margin: 0 auto;
+    margin-top: 200px;
+    margin-bottom: 150px;
+}
+
+/* ▼▼▼ 스와이퍼 스타일 전체 교체 ▼▼▼ */
+.benefits-swiper {
+    width: 1200px; /* ▼ 슬라이드 3개 정도가 보이도록 너비 고정 (값 조절 가능) ▼ */
+    height: 350px; 
+    padding: 20px 0; 
+    margin: 0 auto; /* ▼ 가운데 정렬을 위해 추가 ▼ */
+    overflow: hidden; /* ▼ 이 틀 밖으로 나가는 슬라이드는 숨김 ▼ */
+}
+
+.benefits-swiper .swiper-slide {
+    width: 580px; /* 슬라이드 하나의 기본 너비는 유지 */
+    height: 308px; /* 슬라이드 하나의 기본 높이는 유지 */
+    border-radius: 10px;
+    overflow: hidden;
+    
+    /* 기본 상태: 살짝 투명하고 작게 */
+    opacity: 0.4;
+    transform: scale(0.9);
+    transition: opacity 0.4s ease, transform 0.4s ease; /* 부드러운 효과 */
+}
+
+/* 활성화된(가운데) 슬라이드 스타일 */
+.benefits-swiper .swiper-slide-active {
+    opacity: 1; /* 완전 불투명하게 */
+    transform: scale(1); /* 원래 크기로 */
+}
+
+.benefits-swiper .swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+/* ▲▲▲ 스와이퍼 스타일 끝 ▲▲▲ */
+
+/* 기존 benefit-list, benefit-item 관련 스타일은 삭제합니다. */
+.ai-care { background-color: #4a4a4a; color: #fff; }
+.ai-care h2 { color: #fff; }
+.ai-care-boxes { max-width: 1000px; margin: 0 auto; display: flex; gap: 20px; }
+.ai-care .box { 
+    flex: 1; 
+    border: 1px solid #777; 
+    padding: 30px; 
+    text-align: left; 
+    background-color: #4a4a4a; /* 기본 배경색 명시 (CSS 상단 .ai-care에도 있음) */
+    color: #fff; /* 기본 글자색 명시 (CSS 상단 .ai-care에도 있음) */
+    transition: background-color 0.3s ease, color 0.3s ease; /* ▼ 부드러운 색상 전환 효과 추가 ▼ */
+}
+.ai-care .box p { 
+    font-size: 18px; 
+    margin-bottom: 20px; 
+    /* color: inherit; */ /* 부모 요소의 색상을 따라가도록 명시 (선택사항) */
+}
+.ai-care .box a { 
+    font-weight: 600; 
+    text-decoration: underline; 
+    /* color: inherit; */ /* 부모 요소의 색상을 따라가도록 명시 (선택사항) */
+}
+
+/* ▼▼▼ 마우스를 올렸을 때 색상을 반전시키는 규칙 추가 ▼▼▼ */
+.ai-care .box:hover {
+    background-color: #fff; /* 배경을 흰색으로 변경 */
+    color: #4a4a4a; /* 글자색을 원래 배경색이었던 회색으로 변경 */
+}
+/* ▼▼▼ 기존 footer 관련 스타일을 이 코드로 전체 교체해주세요 ▼▼▼ */
+footer {
+    background-color: #f9f9f9;
+    color: #888;
+    font-size: 13px;
+    height: 470px;
+    padding: 70px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 439번째 줄 근처 */
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* ← '위쪽 선에 맞춰 정렬'로 변경! */
+    padding-bottom: 0px;
+    border-bottom: 1px solid #eee;
+}
+
+.footer-logo {
+    opacity: 1;
+    margin-bottom: 20px;
+    margin-right: 0px;
+    height:25px; /* 로고 높이 조절 */
+}
+
+.footer-details p {
+    margin-bottom: 10px;
+    line-height: 1.8;
+}
+
+.footer-details span {
+    margin-right: 15px;
+    padding-right: 15px;
+    border-right: 1px solid #ddd;
+}
+
+.footer-details span:last-child {
+    border-right: none;
+    margin-right: 0;
+    padding-right: 0;
+}
+
+.footer-details a {
+    text-decoration: underline;
+}
+
+.footer-social {
+    display: flex;
+    gap: 15px;
+    margin-top: 70px;
+}
+
+.footer-social a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background-color: #999999;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 22px;
+}
+
+.footer-escrow {
+    padding: 30px 0;
+    font-size: 12px;
+    color: #999;
+}
+
+.footer-escrow a {
+    text-decoration: underline;
+    font-weight: 600;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+.footer-copyright {
+    padding-top: 0px;
+    font-size: 12px;
+    color: #aaa;
+}
+.scroll-section { visibility: hidden; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .gnb, .top-menu { display: none; } /* 모바일에선 다른 방식 필요 */
+}
+
+/* 메인 메뉴용 움직이는 바 스타일 */
+.main-active-bar {
+    position: absolute;
+    bottom: -3px; /* 요청하신 위치로 수정 */
+    height: 3px;
+    background-color: var(--bar-color);
+    transition: left 0.4s ease, width 0.4s ease;
+}
+
+/* ▼ 마우스 오버 시 텍스트 색상 변경을 위한 새 스타일 추가 */
+.gnb .main-menu > li.active-main-item > a {
+    color: var(--bar-color);
+}
+
+/* ... (기존 코드 맨 마지막 줄) ... */
+.gnb .main-menu > li.active-main-item > a {
+    color: var(--bar-color);
+}
+
+/* ▼▼▼ 이 코드를 파일 맨 아래에 붙여넣으세요! ▼▼▼ */
+
+/* VIEW MORE 버튼 스타일 */
+.view-more-container {
+    margin-top: 50px; /* 상품 목록과 버튼 사이의 간격 */
+}
+
+/* 454번째 줄 근처 */
+.view-more-btn {
+    display: inline-block;
+    padding: 10px 40px;
+    border: 1px solid var(--bar-color);
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    
+    /* ▼ 기본 상태를 흰 배경 + 녹색 글씨로 변경 */
+    background-color: #fff;
+    color: var(--bar-color);
+}
+
+/* VIEW MORE 버튼 스타일 */
+.view-more-container {
+    margin-top: 50px;
+}
+
+.view-more-btn {
+    display: inline-block;
+    padding: 10px 40px;
+    border: 1px solid var(--bar-color);
+    border-radius: 20px;
+    font-size: 14px;
+    color: var(--bar-color);
+    background-color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ▼▼▼ 이 부분의 주소를 더 구체적으로 바꿔줍니다 ▼▼▼ */
+.ranking .view-more-btn:hover {
+    background-color: var(--bar-color);
+    color: #fff;
+}
+
+/* ▼▼▼ 이 코드를 CSS 파일 맨 아래에 붙여넣으세요! ▼▼▼ */
+
+/* --- Ranking Subpage Styles --- */
+
+/* 페이지 전체 콘텐츠 영역 조정 */
+.ranking-page-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 150px; /* 헤더 높이 + 추가 여백 */
+    padding-bottom: 280px;
+}
+
+.ranking-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.ranking-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+/* 필터 버튼 영역 스타일 */
+.ranking-filters {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* 아이콘 버튼 사이 간격 */
+    margin-bottom: 50px;
+    padding-bottom: 0; 
+    border-bottom: none; 
+    padding-top: 20px;
+}
+
+.filter-btn {
+    display: flex;
+    flex-direction: column; /* 아이콘 아래 텍스트 배치 */
+    align-items: center;
+    justify-content: center; /* 내용물 중앙 정렬 */
+    width: 80px; /* 동그라미 크기 */
+    height: 80px; /* 동그라미 크기 */
+    border: 1px solid #e0e0e0; /* 연한 회색 테두리 */
+    border-radius: 50%; /* 완전한 원으로 */
+    background-color: #f9f9f9;
+    font-size: 11px; /* 텍스트 크기 줄임 */
+    color: #555;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    padding: 0; /* 내부 패딩 제거 */
+    gap: 4px; /* 아이콘과 텍스트 사이 간격 */
+}
+
+.filter-btn i {
+    font-size: 24px; /* 아이콘 크기 키움 */
+    margin-bottom: 0px; /* 텍스트와의 간격은 gap으로 조정 */
+}
+
+
+/* ▼ 마우스 오버 시 스타일 (녹색 배경 + 흰색 텍스트) ▼ */
+.filter-btn:hover { /* :not(.active) 제거하여 모든 hover에 적용 */
+    background-color: var(--bar-color); /* 배경 녹색 */
+    color: #fff; /* 글자/아이콘 흰색 */
+    border-color: var(--bar-color); /* 테두리 녹색 */
+}
+
+/* 카테고리 메뉴 컨테이너 */
+.ranking-page-content .ranking-nav-container {
+    margin-bottom: 50px;
+    padding: 15px 0; /* 위아래 패딩으로 선과 버튼 사이 간격 만듦 */
+    overflow: visible; 
+    cursor: default; 
+    border-top: 1px solid #eee; /* ▼ 위쪽 구분선 추가 ▼ */
+    border-bottom: 1px solid #eee; /* ▼ 아래쪽 구분선 추가 ▼ */
+    position: static;
+    /* Removed padding-bottom: 0; */
+}
+
+.ranking-page-content .ranking-nav {
+    display: flex;
+    justify-content: flex-start; /* ▼ 다시 가운데 정렬로 변경 ▼ */
+    gap: 25px; /* ▼ 버튼 사이 간격을 조금 더 넓힘 (원하는 값으로 조절) ▼ */
+    border-bottom: none; 
+    pointer-events: all; 
+    position: static; 
+    bottom: 0;
+    padding-left: 30px; 
+    
+    /* ▼▼▼ 고정 너비와 margin: auto 제거 ▼▼▼ */
+    /* width: 1080px; */ 
+    /* margin: 0 auto; */
+    width: auto; /* 너비는 내용에 맞게 자동으로 조절 */
+    margin: 0; /* 불필요한 margin 제거 */
+    /* ▲▲▲ 너비 및 정렬 코드 수정 ▲▲▲ */
+}
+
+.ranking-page-content .ranking-nav li a {
+    display: block;
+    padding: 8px 18px; /* 둥근 사각형 버튼 패딩 */
+    font-size: 14px; /* 폰트 크기 살짝 줄임 */
+    color: #555; 
+    border: 1px solid #e0e0e0; /* 기본 테두리 */
+    border-radius: 20px; /* 둥근 모서리 */
+    background-color: #fff; /* 기본 배경 흰색 */
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+    margin-bottom: 0; /* margin 제거 */
+}
+
+/* 마우스 오버 시 (활성화되지 않은 메뉴만) */
+.ranking-page-content .ranking-nav li:not(.active) a:hover {
+    background-color: #f9f9f9;
+    border-color: #dcdcdc;
+    color: #333;
+}
+
+/* 활성화된 메뉴 스타일 (녹색 배경 + 흰색 글씨) */
+.ranking-page-content .ranking-nav li.active a {
+    background-color: var(--bar-color); 
+    color: #fff; 
+    border-color: var(--bar-color); 
+    font-weight: 600; 
+}
+
+/* ... .ranking-nav li.active a 규칙 다음 줄 ... */
+
+/* ▼▼▼ 첫 번째와 마지막을 제외한 li 요소에 오른쪽 간격 추가 ▼▼▼ */
+.ranking-page-content .ranking-nav li:not(:first-child):not(:last-child) {
+    margin-right: 0px; /* 중간 버튼들 사이 간격 (값 조절 가능) */
+    position: relative; 
+}
+
+/* ▼▼▼ 첫 번째 li 요소에 더 넓은 오른쪽 간격 추가 ▼▼▼ */
+.ranking-page-content .ranking-nav li:first-child {
+    margin-right: 30px; /* '전체'와 '스킨케어' 사이 간격 (값 조절 가능) */
+    position: relative; /* 세로선 위치 기준 */
+}
+/* 마지막 li에는 오른쪽 간격 없음 (기존과 동일) */
+.ranking-page-content .ranking-nav li:last-child {
+    margin-right: 0;
+    position: relative; 
+}
+
+/* 버튼 오른쪽에 세로 구분선 추가 */
+.ranking-page-content .ranking-nav li {
+    position: relative; 
+}
+
+/* ▼▼▼ 첫 번째 버튼 오른쪽에만 선 추가 ▼▼▼ */
+.ranking-page-content .ranking-nav li:first-child::after { 
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -28px; /* 버튼 간격(gap 20px)의 절반 + 선 두께 고려 */
+    transform: translateY(-50%);
+    width: 1px;
+    height: 30px; 
+    background-color: #eee; 
+}
+/* ▲▲▲ 선택자를 :first-child로 변경 ▲▲▲ */
+
+
+/* 기존 초록색 바는 숨김 (이전과 동일) */
+.ranking-page-content .ranking-active-bar {
+    display: none;
+}
+
+/* 상품 목록 그리드 스타일 */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5열 그리드 */
+    gap: 30px 30px; /* 행 간격 30px, 열 간격 30px */
+}
+
+/* 상품 아이템 스타일 (기존 .item과 동일하게 사용) */
+.product-grid .item {
+    width: 100%; /* 그리드가 너비를 제어하므로 100%로 설정 */
+    text-align: left;
+    position: relative;
+}
+
+.product-grid .rank-badge {
+    position: absolute; top: 10px; left: 10px;
+    width: 28px; height: 28px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff; border-radius: 50%;
+    display: flex; justify-content: center;
+    align-items: center;
+    font-size: 14px; font-weight: 700;
+}
+.product-grid .item img {
+    width: 100%; margin-bottom: 10px; display: block;
+    transition: box-shadow 0.3s ease-in-out;
+}
+.product-grid .item img:hover {
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+}
+.product-grid .item h3 { font-size: 16px; font-weight: 500; margin-bottom: 5px; } /* 폰트 크기 살짝 줄임 */
+.product-grid .price-box { margin-top: 8px; }
+.product-grid .original-price { font-size: 13px; color: #aaa; text-decoration: line-through; } /* 폰트 크기 살짝 줄임 */
+.product-grid .final-price-line { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.product-grid .discount { font-size: 16px; font-weight: 700; color: #e52e2e; } /* 폰트 크기 살짝 줄임 */
+.product-grid .final-price { font-size: 16px; font-weight: 700; color: #333; } /* 폰트 크기 살짝 줄임 */
+.product-grid .tags { margin-top: 0px; }
+.product-grid .tags span { font-size: 12px; color: #999; margin-right: 6px; } /* 폰트 크기 살짝 줄임 */
+
+
+/* 반응형: 화면이 작아지면 4열 -> 3열 -> 2열로 변경 */
+@media (max-width: 1024px) {
+    .product-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .ranking-filters {
+        flex-wrap: wrap; /* 필터 버튼 줄바꿈 허용 */
+        justify-content: center;
+    }
+}
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media (max-width: 480px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* AI 케어 섹션과 Footer는 기존 스타일 유지 */
